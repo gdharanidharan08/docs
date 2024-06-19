@@ -1,0 +1,44 @@
+from datetime import datetime
+from typing import List, Any
+
+# Mock Document class
+class Document:
+    def __init__(self, did, date):
+        self.did = did
+        self.date = date
+    
+    def to_dict(self):
+        return {"did": self.did, "date": self.date}
+    
+    def __repr__(self):
+        return f'Document("did":{self.did}, "date":"{self.date}")'
+
+# Sample data
+data = [
+    Document(123, "2024-06-24"),
+    Document(567, "0-0-0"),
+    Document(891, "0-0-0"),
+    Document(423, "2027-06-24")
+]
+
+def sort_documents_by_date(documents: List[Document]) -> List[Document]:
+    # Convert documents to a list of dictionaries
+    data_dicts = [doc.to_dict() for doc in documents]
+    
+    # Replace invalid dates with a minimum date and parse dates
+    for item in data_dicts:
+        if item["date"] == "0-0-0":
+            item["date"] = "0001-01-01"  # Minimum date
+        item["parsed_date"] = datetime.strptime(item["date"], "%Y-%m-%d")
+    
+    # Sort based on the parsed date in descending order
+    sorted_data_dicts = sorted(data_dicts, key=lambda x: x["parsed_date"], reverse=True)
+    
+    # Convert back to Document objects
+    sorted_documents = [Document(item["did"], item["date"]) for item in sorted_data_dicts]
+    
+    return sorted_documents
+
+# Sort the documents
+sorted_documents = sort_documents_by_date(data)
+print(sorted_documents)
